@@ -1,17 +1,23 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Main.gd" type="Script" id=1]
 [ext_resource path="res://Platform.tscn" type="PackedScene" id=2]
-[ext_resource path="res://Player.tscn" type="PackedScene" id=3]
+[ext_resource path="res://MovingPlatform.tscn" type="PackedScene" id=3]
+[ext_resource path="res://crackingPlatform.tscn" type="PackedScene" id=4]
+[ext_resource path="res://movingCrackingPlatform.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Player.tscn" type="PackedScene" id=6]
 
 [node name="Main" type="Node2D"]
 script = ExtResource( 1 )
 Platform = ExtResource( 2 )
+MovingPlatform = ExtResource( 3 )
+CrackingPlatform = ExtResource( 4 )
+MovingCrackingPlatform = ExtResource( 5 )
 
 [node name="Platform" parent="." instance=ExtResource( 2 )]
 position = Vector2( 300, 400 )
 
-[node name="Player" parent="." instance=ExtResource( 3 )]
+[node name="Player" parent="." instance=ExtResource( 6 )]
 
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true

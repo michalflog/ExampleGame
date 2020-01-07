@@ -6,6 +6,10 @@ extends Node2D
 export var platforms_min_gap = 50
 export var platforms_max_gap = 190
 export (PackedScene) var Platform
+export (PackedScene) var MovingPlatform
+export (PackedScene) var CrackingPlatform
+export (PackedScene) var MovingCrackingPlatform
+
 var screen_size
 
 # Called when the node enters the scene tree for the first time.
@@ -44,10 +48,18 @@ func add_platform():
 	for x in platforms:
 		if x.position.y < posY:
 			posY = x.position.y
-			
-	var platform = Platform.instance()
 	
-	platform.name = "Platform"
+	var plat_num = randi() % 4
+	var platform
+	if plat_num == 0:
+		platform = Platform.instance()
+	elif plat_num == 1:
+		platform = MovingPlatform.instance()
+	elif plat_num == 2:
+		platform = CrackingPlatform.instance()
+	elif plat_num == 3:
+		platform = MovingCrackingPlatform.instance()
+	
 	platform.position.x = rand_range(50, screen_size.x - 50)
 	platform.position.y = posY - rand_range(platforms_min_gap, platforms_max_gap)
 	

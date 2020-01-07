@@ -53,3 +53,5 @@ func _platform_enter(area):
 	if area.is_in_group("platform"):
 		if velocity.y >= 0: 
 			velocity.y = -bounce_val
+			if area.is_in_group("crackingPlatform"):
+				area.queue_free()
