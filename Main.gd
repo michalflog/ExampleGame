@@ -21,17 +21,19 @@ func _process(delta):
 	if $Player.position.y < $Camera2D.position.y:
 		$Camera2D.position.y = $Player.position.y
 		
+	if $Player.position.y - $Camera2D.position.y > screen_size.y:
+		restart_game()
+		
 	var platforms = get_tree().get_nodes_in_group("platform")
 	var highest_platform_y = platforms[0].position.y
 	for x in platforms:
-		
 		if x.position.y < highest_platform_y:
 			highest_platform_y = x.position.y
 			
 		if x.position.y > $Camera2D.position.y + screen_size.y/2:
-			x.free()
+			x.queue_free()
 	
-	if highest_platform_y - $Camera2D.position.y < screen_size.y:
+	if $Camera2D.position.y - highest_platform_y < screen_size.y:
 		add_platform()
 	pass
 	
@@ -53,5 +55,20 @@ func add_platform():
 	
 	pass
 	
-func restart_Game():
+func restart_game():
+	var platforms = get_tree().get_nodes_in_group("platform")
+	for x in platforms:
+		x.queue_free()
+		
+	var platform = Platform.instance()
+	platform.position.x = screen_size.x/2
+	platform.position.y = screen_size.y/2 + 100
+	add_child(platform)
+	
+	$Player.position.x = screen_size.x/2
+	$Player.position.y = screen_size.y/2
+	
+	$Camera2D.position.x = $Player.position.x
+	$Camera2D.position.y = $Player.position.y
+	
 	pass
