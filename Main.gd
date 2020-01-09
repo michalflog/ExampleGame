@@ -5,40 +5,48 @@ extends Node2D
 # var b = "text"
 export var platforms_min_gap = 50
 export var platforms_max_gap = 190
+export (PackedScene) var Player
 export (PackedScene) var Platform
 export (PackedScene) var MovingPlatform
 export (PackedScene) var CrackingPlatform
 export (PackedScene) var MovingCrackingPlatform
 
 var screen_size
+var start_camera_position
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	randomize()
+	
 	screen_size = get_viewport_rect().size
-	$Camera2D.position.x = screen_size.x/2
-	$Camera2D.position.y = $Player.position.y
+	
+	$HUD.connect("start_game", $".", "_on_start_game")
 	
 	pass # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):	
-	if $Player.position.y < $Camera2D.position.y:
-		$Camera2D.position.y = $Player.position.y
-		
-	if $Player.position.y - $Camera2D.position.y > screen_size.y:
-		restart_game()
-		
-	var platforms = get_tree().get_nodes_in_group("platform")
-	var highest_platform_y = platforms[0].position.y
-	for x in platforms:
-		if x.position.y < highest_platform_y:
-			highest_platform_y = x.position.y
+func _process(delta):
+	if $".".has_node("Player"):
+		if $Player.position.y < $Camera2D.position.y:
+			$Camera2D.position.y = $Player.position.y
+			update_score(int(start_camera_position - $Camera2D.position.y) / 100)
 			
-		if x.position.y > $Camera2D.position.y + screen_size.y/2:
-			x.queue_free()
-	
-	if $Camera2D.position.y - highest_platform_y < screen_size.y:
-		add_platform()
+		if $Player.position.y - $Camera2D.position.y > screen_size.y:
+			$Player.queue_free()
+			show_hud()
+			
+		var platforms = get_tree().get_nodes_in_group("platform")
+		var highest_platform_y = platforms[0].position.y
+		for x in platforms:
+			if x.position.y < highest_platform_y:
+				highest_platform_y = x.position.y
+				
+			if x.position.y > $Camera2D.position.y + screen_size.y/2 + 50:
+				x.queue_free()
+		
+		if $Camera2D.position.y - highest_platform_y < screen_size.y:
+			add_platform()
+		pass
 	pass
 	
 func add_platform():
@@ -67,7 +75,9 @@ func add_platform():
 	
 	pass
 	
-func restart_game():
+func _on_start_game():
+	update_score(0)
+	
 	var platforms = get_tree().get_nodes_in_group("platform")
 	for x in platforms:
 		x.queue_free()
@@ -77,10 +87,26 @@ func restart_game():
 	platform.position.y = screen_size.y/2 + 100
 	add_child(platform)
 	
-	$Player.position.x = screen_size.x/2
-	$Player.position.y = screen_size.y/2
+	var player = Player.instance()
+	player.position.x = screen_size.x/2
+	player.position.y = screen_size.y/2
+	add_child(player)
 	
-	$Camera2D.position.x = $Player.position.x
+	$Camera2D.position.x = 350
 	$Camera2D.position.y = $Player.position.y
 	
+	start_camera_position = $Camera2D.position.y
+	
+	print_debug($Camera2D.position.x)
+	
+	pass
+	
+func show_hud():
+	$HUD/Button.show()
+	$HUD/MesegeLabel.show()
+	$HUD/MesegeLabel.text = "You fallen"
+	pass
+	
+func update_score(var score):
+	$HUD/ScoreLabel.text = String(score)
 	pass
